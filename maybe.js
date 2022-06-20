@@ -18,6 +18,13 @@ class MayBe {
       : MayBe.of(mayBeFn._value(this._value));
   }
 
+  // flatmap
+  join(monadFn) {
+    return this.isNothing()
+      ? MayBe.of(null)
+      : MayBe.of(monadFn(this._value)._value);
+  }
+
   isNothing() {
     return this._value === null || this._value === undefined;
   }
@@ -32,10 +39,16 @@ function ident(id) {
 }
 let f = MayBe.of(ident);
 
+function identMonad(id) {
+  return MayBe.of(id);
+}
+
 let r = MayBe.of("Hello world")
   .map(ident)
   .map((e) => e.toUpperCase())
   .apply(f)
-  .apply(MayBe.of((e) => e.toLowerCase()));
+  .apply(MayBe.of((e) => e.toLowerCase()))
+  // .apply(MayBe.of(null))
+  .join(identMonad);
 
 console.log(r);
